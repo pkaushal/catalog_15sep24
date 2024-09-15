@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruchikar Stores - Latest Product Catalog</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .catalog {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .grid-item {
+            position: relative;
+        }
+
+        .grid-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .grid-item img:hover {
+            transform: scale(1.2);
+        }
+
+        .image-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 5px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        @media screen and (max-width: 768px) {
+        .grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+    }
+
+    @media screen and (max-width: 480px) {
+        .grid {
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        }
+    }        
+    </style>
+</head>
+
+<body>
+    <div class="catalog">
+        <h1>Ruchikar Stores - Latest Product Catalog</h1>
+        <div class="grid" id="imageGrid"></div>
+    </div>
+
+    <dialog id="itemDialog">
+        <h2>Item Details</h2>
+        <img id="itemImage" src="" alt="" style="width: 100%; height: auto;">
+        <p id="itemDescription"></p>
+        <button id="closeDialogButton">Close</button>
+        <button id="previousButton">Previous</button>
+        <button id="nextButton">Next</button>
+    </dialog>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const imageGrid = document.getElementById('imageGrid');
+            const itemDialog = document.getElementById('itemDialog');
+            const itemImage = document.getElementById('itemImage');
+            const itemDescription = document.getElementById('itemDescription');
+            const closeDialogButton = document.getElementById('closeDialogButton');
+            const previousButton = document.getElementById('previousButton');
+            const nextButton = document.getElementById('nextButton');
+            let currentIndex = 0;
+            let images = [];
+
+            for (let i = 1; i < 61; i++) {
+                const imgElement = document.createElement('img');
+                imgElement.src = `originals/image${i}.jpg`;
+                imgElement.alt = `image${i}.jpg`;
+
+                const gridItem = document.createElement('div');
+                gridItem.className = 'grid-item';
+                gridItem.appendChild(imgElement);
+
+                const imageName = document.createElement('div');
+                imageName.className = 'image-name';
+                imageName.textContent = `item-${i}`;
+
+                gridItem.appendChild(imageName);
+
+                imageGrid.appendChild(gridItem);
+
+                images.push(imgElement);
+            }
+
+            function showItem(index) {
+                const image = images[index];
+                const imageName = image.alt;
+                const itemNumber = imageName.replace('image', '').replace('.jpg', '');
+                const itemDescriptionText = `This is item ${itemNumber}.`;
+                const itemImageSrc = image.src;
+
+                itemDescription.textContent = itemDescriptionText;
+                itemImage.src = itemImageSrc;
+                itemDialog.showModal();
+            }
+
+            function closeDialog() {
+                itemDialog.close();
+            }
+
+            function showPreviousItem() {
+                currentIndex = (currentIndex - 1 + images.length) % images.length;
+                showItem(currentIndex);
+            }
+
+            function showNextItem() {
+                currentIndex = (currentIndex + 1) % images.length;
+                showItem(currentIndex);
+            }
+
+            images.forEach((image, index) => {
+                image.addEventListener('click', () => {
+                    currentIndex = index;
+                    showItem(currentIndex);
+                });
+            });
+
+            closeDialogButton.addEventListener('click', closeDialog);
+            previousButton.addEventListener('click', showPreviousItem);
+            nextButton.addEventListener('click', showNextItem);
+
+            itemDialog.addEventListener('swiped-left', showNextItem);
+            itemDialog.addEventListener('swiped-right', showPreviousItem);
+        });
+    </script>
+</body>
+
+</html>
