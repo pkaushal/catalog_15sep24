@@ -50,16 +50,16 @@
         }
 
         @media screen and (max-width: 768px) {
-        .grid {
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            .grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
         }
-    }
 
-    @media screen and (max-width: 480px) {
-        .grid {
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        @media screen and (max-width: 480px) {
+            .grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
         }
-    }        
     </style>
 </head>
 
@@ -150,6 +150,41 @@
             itemDialog.addEventListener('swiped-left', showNextItem);
             itemDialog.addEventListener('swiped-right', showPreviousItem);
         });
+
+        itemDialog.addEventListener('touchstart', handleTouchStart, false);
+        itemDialog.addEventListener('touchmove', handleTouchMove, false);
+
+        let xDown = null;
+        let yDown = null;
+
+        function handleTouchStart(event) {
+            const firstTouch = event.touches[0];
+            xDown = firstTouch.clientX;
+            yDown = firstTouch.clientY;
+        }
+
+        function handleTouchMove(event) {
+            if (!xDown || !yDown) {
+                return;
+            }
+
+            const xUp = event.touches[0].clientX;
+            const yUp = event.touches[0].clientY;
+
+            const xDiff = xDown - xUp;
+            const yDiff = yDown - yUp;
+
+            if (Math.abs(xDiff) > Math.abs(yDiff)) {
+                if (xDiff > 0) {
+                    showNextItem();
+                } else {
+                    showPreviousItem();
+                }
+            }
+
+            xDown = null;
+            yDown = null;
+        }        
     </script>
 </body>
 
